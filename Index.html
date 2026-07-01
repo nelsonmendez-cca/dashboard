@@ -1,0 +1,81 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Mapa de Temperaturas</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <style>
+        html, body, #map {
+            width: 100%;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+        .temp-label {
+            background: white;
+            border: 2px solid #444;
+            border-radius: 10px;
+            padding: 4px 8px;
+            text-align: center;
+            font-family: Arial, sans-serif;
+            font-weight: bold;
+            box-shadow: 0 2px 8px rgba(0,0,0,.35);
+            white-space: nowrap;
+        }
+        .termometro {
+            font-size: 20px;
+            line-height: 20px;
+            display: block;
+        }
+        .valor {
+            font-size: 15px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="map"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    // Inyección segura de los datos desde Apps Script
+    const estaciones = [{"nombre":"Güija","lat":14.22838889,"lon":-89.46908333,"temp":28.4},{"nombre":"Finca Los Andes","lat":13.87475,"lon":-89.62830556,"temp":18.8},{"nombre":"Candelaria de la Frontera","lat":14.11930556,"lon":-89.65586111,"temp":26.7},{"nombre":"Planes de Montecristo","lat":14.39888889,"lon":-89.36055556,"temp":18.6},{"nombre":"Santa Ana - UNICAES","lat":13.98266667,"lon":-89.5,"temp":25.9},{"nombre":"Chorrera del Guayabo","lat":13.98775,"lon":-88.75594444,"temp":28.7},{"nombre":"Sensuntepeque","lat":13.87130556,"lon":-88.64475,"temp":25.9},{"nombre":"Cerrón Grande","lat":13.93764,"lon":-88.913315,"temp":28.6},{"nombre":"Cojutepeque","lat":13.72058333,"lon":-88.92625,"temp":25.4},{"nombre":"Nueva Concepción","lat":14.12544444,"lon":-89.28830556,"temp":28.4},{"nombre":"La Palma","lat":14.27827778,"lon":-89.15913889,"temp":23.7},{"nombre":"Las Pilas","lat":14.37252778,"lon":-89.09644444,"temp":18.8},{"nombre":"Ahuachapán","lat":13.94311,"lon":-89.860083,"temp":25.5},{"nombre":"La Hachadura","lat":13.85966667,"lon":-90.08597222,"temp":29.6},{"nombre":"San Andres","lat":13.80647222,"lon":-89.40377778,"temp":25.6},{"nombre":"Chiltiupán","lat":13.597661,"lon":-89.469985,"temp":26.9},{"nombre":"Hda. Melara","lat":13.46894444,"lon":-89.24313889,"temp":29.1},{"nombre":"PROCAFE","lat":13.684,"lon":-89.287,"temp":25.5},{"nombre":"San Miguel - UES","lat":13.43891667,"lon":-88.15908333,"temp":29.4},{"nombre":"La Unión CORSAIN","lat":13.32494444,"lon":-87.81472222,"temp":28.9},{"nombre":"Santa Rosa de Lima","lat":13.62375,"lon":-87.86722222,"temp":30.2},{"nombre":"Aeropuerto de Ilopango","lat":13.697416,"lon":-89.117,"temp":26},{"nombre":"Acajutla Puerto Nuevo","lat":13.5764,"lon":-89.8335,"temp":29.5},{"nombre":"Los Naranjos","lat":13.87494444,"lon":-89.67411111,"temp":21.1},{"nombre":"Jiquilisco","lat":13.73,"lon":-88.95,"temp":28.8},{"nombre":"Santiago de María","lat":13.47961111,"lon":-88.47155556,"temp":24.5},{"nombre":"Puente Cuscatlán","lat":13.602655,"lon":-88.593303,"temp":28.1},{"nombre":"San Francisco Gotera","lat":13.69225,"lon":-88.1085,"temp":28.1},{"nombre":"Perquín","lat":13.96102778,"lon":-88.15838889,"temp":24}];
+
+    function colorTemp(t) {
+        if (t < 20) return "#0044ff";
+        if (t < 24) return "#00aaff";
+        if (t < 28) return "#00aa00";
+        if (t < 32) return "#ff8800";
+        return "#ff0000";
+    }
+
+    // Centrado inicial aproximado (ajustado para la región de El Salvador según tus coordenadas)
+    const map = L.map('map').setView([13.8, -88.9], 8);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    // Renderizar los marcadores personalizados
+    estaciones.forEach(e => {
+        const icono = L.divIcon({
+            className: '',
+            html: `
+            <div class="temp-label">
+                <span class="termometro">🌡️</span>
+                <div class="valor" style="color: ${colorTemp(e.temp)}">
+                    ${e.temp.toFixed(1)}°C
+                </div>
+            </div>`,
+            iconSize: [75, 60],
+            iconAnchor: [37, 30]
+        });
+
+        L.marker([e.lat, e.lon], { icon: icono })
+            .addTo(map)
+            .bindPopup("<b>" + e.nombre + "</b><br>" + e.temp.toFixed(1) + " °C");
+    });
+</script>
+</body>
+</html>
